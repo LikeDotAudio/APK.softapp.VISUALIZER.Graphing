@@ -90,6 +90,13 @@ an error, missing fields default, group/depth ticks).
 
 ---
 
+## 📚 Wiki
+
+The depth lives in [Documentation/README.md](Documentation/README.md): principles,
+architecture and delivery.
+
+---
+
 ## 🛣 Plans
 
 None in this repository. Plans live in `Documentation/🛣Roadmap/roadmap.htm` at
