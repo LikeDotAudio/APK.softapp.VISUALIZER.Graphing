@@ -56,7 +56,8 @@ echo '{"axes":{"x":"pitch","y":null,"z":"timbre"},
 
 Checked 2026-10-30: builds offline with `serde` / `serde_json` only, and the
 request above returns two groups, a group/subgroup tick axis on `y` and a
-three-entry size legend. There are no tests in the crate.
+three-entry size legend. `cargo test` runs three unit tests (malformed input is
+an error, missing fields default, group/depth ticks).
 
 ---
 
@@ -64,9 +65,7 @@ three-entry size legend. There are no tests in the crate.
 * **Callers**: none. `SCANALYZER.Like.audio/graphing_rs` is a symlink to this
   repo and the Scanalyzer README marks it *retired from the app, PLAN-109.04*;
   the 3D cloud now lays itself out in the browser
-  (`SCANALYZER.Like.audio/Web_Front/src/components/CloudTab/`). The doc comment
-  in `src/main.rs` still speaks of "the Python GUI" that drew its output; that
-  GUI is not in the tree.
+  (`SCANALYZER.Like.audio/Web_Front/src/components/CloudTab/`).
 * **Web Portal Entry**: none — no OS display frames it. `walk_project()` in
   `PODS/POD.THIN/WEB.OsApi/SRC/server.py` lists the folder in the application
   menu as a `rust` app (`entry: Cargo.toml`, from `display.json`).
@@ -84,11 +83,10 @@ three-entry size legend. There are no tests in the crate.
   `compute_sizes()`, so every caller files a sample at the same depth.
 - **A pipe, not a service.** stdin → stdout, one request per run, no port and
   no bus (`main()`), so it can be called from any language without a server.
-- **Never crash the caller.** Unreadable stdin writes `{}`; a malformed request
-  falls back to `Request::default()` and returns an empty, well-formed layout;
-  missing fields read as 0 or `Other` (`num()`, `group_of()`, `main()`). Note
-  that this is graceful rather than strict: bad input is not reported as an
-  error, which sits against the doctrine's *refusal over fabrication*.
+- **Refuse, don't fabricate.** Unreadable stdin or a request that is not valid
+  JSON of the documented shape writes `{"error": "..."}` on stdout (and stderr)
+  and exits 1 — `refuse()` / `main()`. Only *missing* fields fall back: they
+  read as 0 or `Other` (`num()`, `group_of()`).
 
 ---
 

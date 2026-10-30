@@ -7,8 +7,13 @@
 //! Each axis key is a feature name (e.g. "pitch", "length", "timbre") or null,
 //! which means the hierarchical group / subgroup depth. This is the single
 //! implementation of the depth levels, categorical indexing, numeric-feature
-//! extraction, size scaling and tick generation — the Python GUI just draws
-//! whatever comes back.
+//! extraction, size scaling and tick generation — whatever draws the cloud
+//! just plots what comes back. Retired from the Scanalyzer (PLAN-109.04): the
+//! cloud now lays itself out in the browser, and nothing in the tree calls this.
+//!
+//! Bad input is refused, never papered over: unreadable stdin or a request that
+//! is not valid JSON of the shape above writes `{"error": "..."}` on stdout, the
+//! same message on stderr, and exits 1. A missing field still reads as its default.
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{self, Read, Write};
 
@@ -273,14 +278,57 @@ fn compute(req: &Request) -> Response {
     Response { groups, color_idx, x, y, z, sizes, size_label, size_legend }
 }
 
+fn refuse(msg: String) -> ! {
+    eprintln!("oa_graph_layout: {}", msg);
+    let out = serde_json::json!({ "error": msg }).to_string();
+    let _ = io::stdout().write_all(out.as_bytes());
+    std::process::exit(1);
+}
+
 fn main() {
     let mut input = String::new();
-    if io::stdin().read_to_string(&mut input).is_err() {
-        let _ = io::stdout().write_all(b"{}");
-        return;
+    if let Err(e) = io::stdin().read_to_string(&mut input) {
+        refuse(format!("cannot read stdin: {}", e));
     }
-    let req: Request = serde_json::from_str(&input).unwrap_or_default();
+    let req: Request = match serde_json::from_str(&input) {
+        Ok(r) => r,
+        Err(e) => refuse(format!("malformed request: {}", e)),
+    };
     let resp = compute(&req);
-    let out = serde_json::to_string(&resp).unwrap_or_else(|_| "{}".to_string());
-    let _ = io::stdout().write_all(out.as_bytes());
+    match serde_json::to_string(&resp) {
+        Ok(out) => {
+            let _ = io::stdout().write_all(out.as_bytes());
+        }
+        Err(e) => refuse(format!("cannot encode response: {}", e)),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn malformed_request_is_an_error_not_an_empty_layout() {
+        assert!(serde_json::from_str::<Request>("not json").is_err());
+        assert!(serde_json::from_str::<Request>(r#"{"records": 5}"#).is_err());
+    }
+
+    #[test]
+    fn missing_fields_default() {
+        let req: Request = serde_json::from_str("{}").unwrap();
+        let r = compute(&req);
+        assert!(r.groups.is_empty() && r.sizes.is_empty());
+    }
+
+    #[test]
+    fn groups_and_depth_ticks() {
+        let req: Request = serde_json::from_str(
+            r#"{"axes":{"y":null},"records":[{"group":"Drums","subgroup":"Kick","length":1},{"group":"Bass","length":0.5}]}"#,
+        )
+        .unwrap();
+        let r = compute(&req);
+        assert_eq!(r.groups, vec!["Bass", "Drums"]);
+        assert_eq!(r.y.ticks.unwrap().names.len(), 2);
+        assert_eq!(r.size_legend.len(), 3);
+    }
 }
