@@ -72,16 +72,16 @@ same commit.
 ---
 
 ## 🔌 Usage & Integration
-* **Callers**: none. `SCANALYZER.Like.audio/graphing_rs` is a symlink to this
-  repo and the Scanalyzer README marks it *retired from the app, PLAN-109.04*;
+* **Callers**: none. The Scanalyzer's old `graphing_rs` symlink to this repo was
+  removed (SCANALYZER.Like.audio `1dc4f43`); its `SUITE/suite.json` lists this
+  crate as data under `03_ENGINES`, *retired from the app, PLAN-109.04*;
   the 3D cloud now lays itself out in the browser
   (`SCANALYZER.Like.audio/Web_Front/src/components/CloudTab/`).
 * **Web Portal Entry**: none — no OS display frames it, and `display.json`
-  declares no `entry`, `kind` or `topic` and says `"menu": false`. Until
-  WEB.OsApi honours `menu: false`, `walk_project()`
-  (`PODS/POD.THIN/WEB.OsApi/SRC/osapi/apps.py`) still lists the folder as a
-  `rust` app because it holds a `Cargo.toml`; the entry's name says
-  "(retired)".
+  declares no `entry`, `kind` or `topic` and says `"menu": false`, which
+  `walk_project()` (`PODS/POD.THIN/WEB.OsApi/SRC/osapi/apps.py`, WEB.OsApi
+  `accd14c`) honours: the folder is not in the application menu even though it
+  holds a `Cargo.toml`.
 * **Remote Repository**: https://github.com/LikeDotAudio/APK.softapp.VISUALIZER.Graphing
 
 ---

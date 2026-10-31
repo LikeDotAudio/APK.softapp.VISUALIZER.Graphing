@@ -6,13 +6,12 @@ How to use `oa_graph_layout` and how it works inside.
 
 ## Status
 
-Retired from the Scanalyzer (PLAN-109.04). `SCANALYZER.Like.audio/graphing_rs` is a
-symlink to this repo, but the 3D cloud now lays itself out in the browser
+Retired from the Scanalyzer (PLAN-109.04). The Scanalyzer's `graphing_rs` symlink to
+this repo is gone (it lists the crate in `SUITE/suite.json` as data), and the 3D cloud now lays itself out in the browser
 (`SCANALYZER.Like.audio/Web_Front/src/components/CloudTab/`). Nothing in the tree
 runs the binary. `display.json` carries no `kind`, `entry` or `topic` and says
-`"menu": false`; until WEB.OsApi honours that key, `walk_project()`
-(`PODS/POD.THIN/WEB.OsApi/SRC/osapi/apps.py`) still lists the folder as a `rust`
-app because of its `Cargo.toml` marker, named "Graph Layout Engine (retired)".
+`"menu": false`, which `walk_project()` (`PODS/POD.THIN/WEB.OsApi/SRC/osapi/apps.py`)
+honours, so the folder is out of the application menu despite its `Cargo.toml` marker.
 Kept rather than deleted so the move back is a caller, not an archaeology dig.
 
 ## Use

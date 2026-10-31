@@ -20,9 +20,8 @@ How it is built, tested and shipped, and where it lands.
   `display.json` are reachable.
 - **NODE.BareMetal image** copies the Softapps tree into its build context for an
   unrelated crate; it does not build this one.
-- **OS application menu**: `display.json` says `"menu": false`; until WEB.OsApi
-  honours it the walker still lists the folder (by its `Cargo.toml`) as
-  "Graph Layout Engine (retired)" — no live URL, no frame, no topic.
+- **OS application menu**: not listed — `display.json` says `"menu": false` and the
+  walker honours it (WEB.OsApi `accd14c`). No live URL, no frame, no topic.
 
 ## Not automated
 
@@ -37,3 +36,4 @@ live URL: the engine is retired and nothing calls it.
 - **"One implementation" claim corrected** — README Philosophy and PRINCIPLES now say the depth levels exist once *in this crate* and that the browser cloud (`SCANALYZER.Like.audio/Web_Front/src/components/CloudTab/`) is a second, live copy while this one is retired.
 - **PR-04 / CC-06 Generated lane indexes current** (from the SDK/contracts audit) — the lane `INDEX.md` files and `Documentation/README.md` lane counts in HEAD were stale (e.g. Philosophy row title vs the page's H1, Audits/Roadmap counts 0 after the audit pages landed); regenerated with `python3 .apk.scripts/wiki.py <path>` and committed. Verified: `wiki.py --check` on all seven VISUALIZER repos — 0 with problems.
 - **WS-03 No declared topic without a publisher** (from the SDK/contracts audit) — `APK.audio/Gui/Display/Graphing_Engine` is gone: the `topic` key was removed from `display.json` (the engine has no bus client); see the bullets above. Verified: `grep -rn` over `PODS` for the topic finds only docs that record its removal.
+- **Cross-repo follow-ups closed** — WEB.OsApi's walker now skips a folder whose own `display.json` says `"menu": false` (`accd14c`), and SCANALYZER.Like.audio removed its `graphing_rs` symlink, listing the crate in `SUITE/suite.json` instead (`1dc4f43`). Verified: `apps.project_apps()` from `WEB.OsApi/SRC` no longer lists VISUALIZER.Graphing; `graphing_rs` is absent from the Scanalyzer checkout.
