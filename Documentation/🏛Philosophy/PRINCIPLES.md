@@ -14,11 +14,11 @@ cited here, not copied.
    `compute()` (`src/main.rs:264`) builds the whole `Response`; nothing is left for
    the drawer to compute.
 
-2. **One implementation of the depth levels.** The group / subgroup depth, the
-   categorical index and the size scaling exist once each:
+2. **The depth levels exist once in this crate.** The group / subgroup depth, the
+   categorical index and the size scaling exist once each here:
    `axis_values()` (`src/main.rs:124`), `deeper_sub()` (`src/main.rs:104`),
-   `compute_sizes()` (`src/main.rs:208`). Every caller files a sample at the same
-   depth because there is only one place that decides it.
+   `compute_sizes()` (`src/main.rs:208`). They are **not** the only copy in the
+   tree any more — see "Where the code bends a principle".
 
 3. **A pipe, not a service.** One JSON request on stdin, one JSON response on
    stdout, then exit — no port, no bus, no files, no config (`main()`,
@@ -36,7 +36,18 @@ cited here, not copied.
    collected in `BTreeSet` / `BTreeMap`, so the same request always yields the same
    order and the same colour index (`compute()`, `axis_values()`).
 
+6. **The contract is a fixture, not prose.** `tests/fixtures/*.request.json` /
+   `*.response.json` pin the stdin→stdout shape; `tests/contract.rs` runs the
+   binary on them.
+
 ## Where the code bends a principle
+
+- **Two implementations while retired.** The live 3D cloud lays itself out in the
+  browser (`SCANALYZER.Like.audio/Web_Front/src/components/CloudTab/`). This
+  crate is kept, retired (PLAN-109.04), out of the menu (`display.json`
+  `"menu": false`) and without a topic, so nothing presents it as live. If the
+  cloud is ever wired back to an engine, this is that engine and the browser
+  copy goes; until then the browser is the one users see.
 
 - **Missing fields are not refused.** A record without `group` lands in `Other`
   (`group_of()`, `src/main.rs:97`); a missing or non-numeric feature reads as 0

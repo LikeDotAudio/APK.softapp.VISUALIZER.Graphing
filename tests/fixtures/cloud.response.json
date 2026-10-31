@@ -1,0 +1,79 @@
+{
+  "groups": [
+    "Bass",
+    "Drums"
+  ],
+  "color_idx": [
+    1,
+    0,
+    1
+  ],
+  "x": {
+    "vals": [
+      60.0,
+      40.0,
+      72.0
+    ],
+    "label": "Pitch (MIDI)"
+  },
+  "y": {
+    "vals": [
+      2.0,
+      0.0,
+      1.0
+    ],
+    "label": "Group / subgroup",
+    "ticks": {
+      "positions": [
+        0.0,
+        1.0,
+        2.0
+      ],
+      "names": [
+        "Bass",
+        "Drums",
+        "  \u21b3 Kick"
+      ]
+    }
+  },
+  "z": {
+    "vals": [
+      1.0,
+      2.0,
+      0.0
+    ],
+    "label": "timbre",
+    "ticks": {
+      "positions": [
+        0.0,
+        1.0,
+        2.0
+      ],
+      "names": [
+        "bright",
+        "dark",
+        "warm"
+      ]
+    }
+  },
+  "sizes": [
+    146.33333333333331,
+    25.0,
+    285.0
+  ],
+  "size_label": "length",
+  "size_legend": [
+    {
+      "size": 25.0,
+      "label": "0.500"
+    },
+    {
+      "size": 155.0,
+      "label": "1.25"
+    },
+    {
+      "size": 285.0,
+      "label": "2.00"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "axes": { "x": "pitch", "y": null, "z": "timbre" },
+  "size": "length",
+  "feature_labels": { "pitch": "Pitch (MIDI)" },
+  "records": [
+    { "group": "Drums", "subgroup": "Kick", "pitch": 60, "timbre": "dark", "length": 1.2 },
+    { "group": "Bass", "pitch": 40, "timbre": "warm", "length": 0.5 },
+    { "group": "Drums", "subgroup": "Drums", "pitch": 72, "timbre": "bright", "length": 2.0 }
+  ]
+}

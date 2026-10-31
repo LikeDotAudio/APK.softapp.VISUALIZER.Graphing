@@ -9,23 +9,37 @@ How to use `oa_graph_layout` and how it works inside.
 Retired from the Scanalyzer (PLAN-109.04). `SCANALYZER.Like.audio/graphing_rs` is a
 symlink to this repo, but the 3D cloud now lays itself out in the browser
 (`SCANALYZER.Like.audio/Web_Front/src/components/CloudTab/`). Nothing in the tree
-runs the binary. The OS application menu still lists it as a `rust` app from
-`display.json` (`walk_project()` in `PODS/POD.THIN/WEB.OsApi/SRC/server.py`).
+runs the binary. `display.json` carries no `kind`, `entry` or `topic` and says
+`"menu": false`; until WEB.OsApi honours that key, `walk_project()`
+(`PODS/POD.THIN/WEB.OsApi/SRC/osapi/apps.py`) still lists the folder as a `rust`
+app because of its `Cargo.toml` marker, named "Graph Layout Engine (retired)".
+Kept rather than deleted so the move back is a caller, not an archaeology dig.
 
 ## Use
 
 ```bash
-cargo build --release            # binary lands in the APK.audio root target/ (see .cargo/config.toml there)
+cargo build --release            # → <target>/release/oa_graph_layout
 echo '{"axes":{"x":"pitch","y":null,"z":"timbre"},
        "records":[{"group":"Drums","subgroup":"Kick","pitch":60,"timbre":"dark","length":1.2},
-                  {"group":"Bass","pitch":40,"timbre":"warm","length":0.5}]}' | oa_graph_layout
+                  {"group":"Bass","pitch":40,"timbre":"warm","length":0.5}]}' \
+  | "$(cargo metadata --format-version 1 --no-deps | jq -r .target_directory)/release/oa_graph_layout"
 ```
+
+`<target>` is what `cargo metadata` reports: the APK.audio root `target/` inside
+the monorepo (root `.cargo/config.toml`), `./target/` in a standalone checkout.
+The README says the same.
 
 | Stream | Shape |
 |---|---|
 | stdin | `{ axes:{x,y,z}, size, feature_labels, records }` — every field optional |
 | stdout (ok, exit 0) | `{ groups, color_idx, x, y, z, sizes, size_label, size_legend }` |
 | stdout (refused, exit 1) | `{ "error": "malformed request: ..." }`, same text on stderr |
+
+**The contract is the fixture pair**, not this table:
+`tests/fixtures/<name>.request.json` → `tests/fixtures/<name>.response.json`.
+`tests/contract.rs` runs the built binary on every request fixture and compares
+its stdout (numbers to 1e-9), and checks a malformed request exits 1 with
+`{"error": ...}`. Add a pair to pin a new behaviour.
 
 ## Inside
 
@@ -42,6 +56,7 @@ One file, `src/main.rs`.
 | `compute()` | 264 | sorted distinct groups → `color_idx`, the three axes, the sizes |
 | `refuse()`, `main()` | 281–304 | read stdin, parse or refuse, compute, write |
 | `tests` | 306– | malformed input is an error; missing fields default; groups and depth ticks |
+| `tests/contract.rs` | — | runs the binary on `tests/fixtures/*.request.json`, compares with `*.response.json`; malformed → exit 1 |
 
 Data flow: stdin → `serde_json::from_str::<Request>` (error → `refuse`) →
 `compute` → `serde_json::to_string` → stdout.

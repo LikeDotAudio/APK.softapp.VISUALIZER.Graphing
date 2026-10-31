@@ -7,7 +7,7 @@ How it is built, tested and shipped, and where it lands.
 | Step | How | Automated? |
 |---|---|---|
 | Build | `cargo build --release` (crate `oa-graph-layout`, binary `oa_graph_layout`). In the monorepo the root `.cargo/config.toml` sends every build to the root `target/`. | No — no image and no CI job builds it. |
-| Test | `cargo test` — three unit tests in `src/main.rs`. Checked 2026-10-30: 3 passed. | No CI in this repo (no `.github/`). |
+| Test | `cargo test` — three unit tests in `src/main.rs` plus the contract test `tests/contract.rs` (binary on `tests/fixtures/`). Checked 2026-10-30: 3 + 2 passed. | No CI in this repo (no `.github/`); `cargo test` is the one command. |
 | Smoke | the monorepo's smoke run writes its result to [SMOKE.md](../%F0%9F%A7%A9Manual%20and%20Artifacts/SMOKE.md). | Run from the monorepo, by hand. |
 | Source | https://github.com/LikeDotAudio/APK.softapp.VISUALIZER.Graphing — a submodule at `PODS/POD.THIN/Softapps/VISUALIZER/VISUALIZER.Graphing`. | Pushed by the monorepo's `.apk.scripts/deploy_all.py`. |
 
@@ -20,9 +20,18 @@ How it is built, tested and shipped, and where it lands.
   `display.json` are reachable.
 - **NODE.BareMetal image** copies the Softapps tree into its build context for an
   unrelated crate; it does not build this one.
-- **OS application menu** lists it from `display.json` (no live URL, no frame).
+- **OS application menu**: `display.json` says `"menu": false`; until WEB.OsApi
+  honours it the walker still lists the folder (by its `Cargo.toml`) as
+  "Graph Layout Engine (retired)" — no live URL, no frame, no topic.
 
 ## Not automated
 
 Building the binary, running the tests, and any release artifact. There is no
 live URL: the engine is retired and nothing calls it.
+
+## Delivered from the 2026-10-30 audit
+
+- **Retirement settled in the manifest** — `display.json` drops `kind`, `entry`, `tech`, `class`, `autostart` and the publisher-less `topic` `APK.audio/Gui/Display/Graphing_Engine`, is named "(retired)" and says `"menu": false`. The crate stays (reversible; the cloud could be wired back to it). Taking the folder out of the OS application menu needs WEB.OsApi's walker to honour `menu: false` (it lists any folder with a `Cargo.toml`), and the `SCANALYZER.Like.audio/graphing_rs` symlink is the Scanalyzer's to remove — both handoffs filed. Verified: `python3 -m json.tool display.json`.
+- **I/O contract as a fixture pair** — `tests/fixtures/cloud.request.json` / `cloud.response.json` (axis by field, group/subgroup depth with an echoing subgroup folded, categorical timbre, size legend, feature label) and `tests/contract.rs`, which runs the built binary on every `*.request.json` and compares stdout to 1e-9, plus a malformed-request exit-1 check. Verified: `cargo test --offline` — 3 unit + 2 contract pass; a hand-corrupted response fixture made `fixtures_round_trip` fail.
+- **Build output path agrees** — README and ARCHITECTURE both say `<target>/release/oa_graph_layout`, where `<target>` is what `cargo metadata` reports (root `target/` in the monorepo via root `.cargo/config.toml`, `./target/` standalone), and run it through `cargo metadata … | jq -r .target_directory`. Verified by running that command.
+- **"One implementation" claim corrected** — README Philosophy and PRINCIPLES now say the depth levels exist once *in this crate* and that the browser cloud (`SCANALYZER.Like.audio/Web_Front/src/components/CloudTab/`) is a second, live copy while this one is retired.
