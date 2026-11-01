@@ -1,6 +1,6 @@
 [package]
 name = "oa-graph-layout"
-version = "0.1.0"
+version = "2.0.0"
 edition = "2021"
 description = "Computes the 3D sample-cloud placement (axes, sizes, colours, ticks) for the Sample Analyzer GUI."
 

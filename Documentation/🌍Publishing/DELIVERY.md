@@ -37,3 +37,6 @@ live URL: the engine is retired and nothing calls it.
 - **PR-04 / CC-06 Generated lane indexes current** (from the SDK/contracts audit) — the lane `INDEX.md` files and `Documentation/README.md` lane counts in HEAD were stale (e.g. Philosophy row title vs the page's H1, Audits/Roadmap counts 0 after the audit pages landed); regenerated with `python3 .apk.scripts/wiki.py <path>` and committed. Verified: `wiki.py --check` on all seven VISUALIZER repos — 0 with problems.
 - **WS-03 No declared topic without a publisher** (from the SDK/contracts audit) — `APK.audio/Gui/Display/Graphing_Engine` is gone: the `topic` key was removed from `display.json` (the engine has no bus client); see the bullets above. Verified: `grep -rn` over `PODS` for the topic finds only docs that record its removal.
 - **Cross-repo follow-ups closed** — WEB.OsApi's walker now skips a folder whose own `display.json` says `"menu": false` (`accd14c`), and SCANALYZER.Like.audio removed its `graphing_rs` symlink, listing the crate in `SUITE/suite.json` instead (`1dc4f43`). Verified: `apps.project_apps()` from `WEB.OsApi/SRC` no longer lists VISUALIZER.Graphing; `graphing_rs` is absent from the Scanalyzer checkout.
+
+## Releases
+- **Released `2.0.0`, tag `v2.0.0`** (2026-11-01, ROAD-3452, the owner's V2) — no SDK pin; every manifest says 2.0.0; GitHub release `v2.0.0`.
